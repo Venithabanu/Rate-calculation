@@ -93,13 +93,13 @@
 <script>
     function calculateRate() {
         // Get input values
-        const diameter = parseFloat(document.getElementById("diameter").value);
-        const length = parseFloat(document.getElementById("length").value);
-        const materialCost = parseFloat(document.getElementById("materialCost").value);
-        const labourCost = parseFloat(document.getElementById("labourCost").value);
+        const diameter = parseFloat(document.getElementById("diameter").value); // Diameter of the stud
+        const length = parseFloat(document.getElementById("length").value);     // Length of the stud
+        const materialCost = parseFloat(document.getElementById("materialCost").value); // Material cost per unit
+        const labourCost = parseFloat(document.getElementById("labourCost").value);     // Labour cost
 
-        // Determine allowance
-        const allowance = length <= 75 ? 5 : 10;
+        // Allowance calculation based on new logic
+        const allowance = length <= 75 ? 5 : 8;
 
         // Calculate Y
         const Y = diameter * diameter * (length + allowance) * 0.0000062;
@@ -113,7 +113,7 @@
         // Calculate marginal rate (final rate)
         const marginalRate = conversionRate + (0.15 * conversionRate);
 
-        // Display only the final rate
+        // Display the result
         const outputDiv = document.getElementById("output");
         outputDiv.style.display = "block";
         outputDiv.innerHTML = `Final Rate: ₹${marginalRate.toFixed(2)}`;
