@@ -67,6 +67,18 @@
             text-align: center;
             color: #333;
         }
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -113,15 +125,36 @@
         <input type="number" id="rodDiameter" step="0.01" required>
     </div>
     <div class="form-group">
-        <label for="studLength">Stud Length (mm):</label>
-        <input type="number" id="studLength" step="0.01" required>
-    </div>
-    <div class="form-group">
         <label for="quantity">Quantity of Studs:</label>
         <input type="number" id="quantity" step="1" required>
     </div>
+    <div class="form-group">
+        <label for="studsData">Enter Stud Length and Quantity (e.g., 150x500, 200x300):</label>
+        <input type="text" id="studsData" placeholder="Length x Quantity (comma separated)" required>
+    </div>
     <button type="button" onclick="calculateRodWeight()">Calculate</button>
     <div id="rodOutput" class="output" style="display: none;"></div>
+
+    <!-- Display Calculated Results in a Table -->
+    <table id="rodResults" style="display: none;">
+        <thead>
+            <tr>
+                <th>Length (mm)</th>
+                <th>Quantity</th>
+                <th>Weight (kg)</th>
+                <th>Rod Count</th>
+            </tr>
+        </thead>
+        <tbody id="rodResultsBody">
+            <!-- Results will be populated here -->
+        </tbody>
+    </table>
+
+    <!-- Display Total Rod Count and Length -->
+    <div id="totalOutput" class="output" style="display: none;">
+        <p>Total Rod Count: <span id="totalRodCount">0</span></p>
+        <p>Total Length: <span id="totalLength">0</span> mm</p>
+    </div>
 </div>
 
 <script>
@@ -168,29 +201,57 @@
     // Rod Weight and Count Calculator
     function calculateRodWeight() {
         const rodDiameter = parseFloat(document.getElementById("rodDiameter").value);
-        const studLength = parseFloat(document.getElementById("studLength").value);
         const quantity = parseInt(document.getElementById("quantity").value);
+        const studsData = document.getElementById("studsData").value;
 
         const rodLength = 3000; // Fixed rod length (3000mm)
         const allowance = 10; // Fixed allowance for stud length
 
-        // Calculate number of studs per rod
-        const studsPerRod = rodLength / studLength;
+        const studEntries = studsData.split(',');
 
-        // Calculate total rods needed
-        const totalRods = quantity / studsPerRod;
+        let totalRodCount = 0;
+        let totalWeight = 0;
+        let totalLength = 0;
 
-        // Calculate weight based on formula
-        const weight = rodDiameter * rodDiameter * (studLength + allowance) * 0.0000062 * quantity;
+        const resultsBody = document.getElementById("rodResultsBody");
+        resultsBody.innerHTML = ''; // Clear previous results
 
-        // Display the results
-        const outputDiv = document.getElementById("rodOutput");
-        outputDiv.style.display = "block";
-        outputDiv.innerHTML = `Total rods needed: ${totalRods.toFixed(2)}<br>Weight of the rod to be used: ₹${weight.toFixed(2)} kg`;
+        // Iterate over each length and quantity pair
+        studEntries.forEach(entry => {
+            const [studLength, studQuantity] = entry.split('x').map(val => parseFloat(val.trim()));
+
+            // Calculate number of studs per rod
+            const studsPerRod = rodLength / studLength;
+
+            // Calculate total rods needed
+            const totalRods = studQuantity / studsPerRod;
+
+            // Calculate weight based on formula
+            const weight = rodDiameter * rodDiameter * (studLength + allowance) * 0.0000062 * studQuantity;
+
+            // Update total values
+            totalRodCount += totalRods;
+            totalWeight += weight;
+            totalLength += studQuantity * studLength;
+
+            // Display individual results in the table
+            const row = document.createElement('tr');
+            row.innerHTML = `<td>${studLength}</td><td>${studQuantity}</td><td>${weight.toFixed(2)}</td><td>${totalRods.toFixed(2)}</td>`;
+            resultsBody.appendChild(row);
+        });
+
+        // Update total output
+        document.getElementById("totalRodCount").innerText = totalRodCount.toFixed(2);
+        document.getElementById("totalLength").innerText = totalLength.toFixed(2);
+        
+        // Display the results table and total output
+        document.getElementById("rodResults").style.display = 'table';
+        document.getElementById("totalOutput").style.display = 'block';
+
+        const rodOutput = document.getElementById("rodOutput");
+        rodOutput.style.display = "block";
+        rodOutput.innerHTML = `Total Weight: ${totalWeight.toFixed(2)} kg`;
     }
-
-    // Initialize by showing Stud Rate Calculator by default
-    toggleCalculator();
 </script>
 
 </body>
