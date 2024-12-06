@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stud Rate and Rod Weight Calculator</title>
+    <title>Calculation Tool</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -75,54 +75,93 @@
             padding: 10px;
             text-align: center;
         }
+        #studRateSection, #rodWeightSection {
+            display: none;
+        }
     </style>
 </head>
 <body>
 
-<h1>Stud Rate and Rod Weight Calculator</h1>
-<form id="calculatorForm">
-    <div class="form-group">
-        <label for="diameter">Diameter (mm):</label>
-        <input type="number" id="diameter" step="0.01" required>
-    </div>
-    <div class="form-group">
-        <label for="numItems">How many items (lengths and quantities) would you like to calculate?</label>
-        <input type="number" id="numItems" required>
-    </div>
-    <div id="itemInputs" style="display: none;"></div>
-    <div class="form-group">
-        <label for="materialCost">Cost of Material (per unit):</label>
-        <input type="number" id="materialCost" step="0.01" required>
-    </div>
-    <div class="form-group">
-        <label for="labourCost">Labour Cost:</label>
-        <input type="number" id="labourCost" step="0.01" required>
-    </div>
-    <button type="button" onclick="generateInputFields()">Generate Input Fields</button>
-    <button type="button" id="calculateButton" style="display: none;" onclick="calculateRodWeights()">Calculate</button>
-</form>
+<h1>Calculation Tool</h1>
 
-<div id="rodResults" class="output" style="display: none;">
-    <h3>Results</h3>
-    <table id="resultsTable">
-        <thead>
-            <tr>
-                <th>Length (mm)</th>
-                <th>Quantity</th>
-                <th>Weight (kg)</th>
-                <th>Rods Required</th>
-            </tr>
-        </thead>
-        <tbody id="resultsBody">
-        </tbody>
-    </table>
-    <div id="totalOutput" class="output">
-        <p>Total Rod Weight: <span id="totalWeight"></span> kg</p>
-        <p>Total Rod Count: <span id="totalRodCount"></span></p>
+<!-- Dropdown to select the section -->
+<div class="form-group">
+    <label for="calculationType">Select Calculation Type:</label>
+    <select id="calculationType" onchange="toggleSections()">
+        <option value="studRate">Stud Rate Calculation</option>
+        <option value="rodWeight">Rod Weight and Count Calculation</option>
+    </select>
+</div>
+
+<!-- Stud Rate Calculation Section -->
+<div id="studRateSection">
+    <h2>Stud Rate Calculator</h2>
+    <!-- Add your Stud Rate calculation form here -->
+    <p>Stud Rate Calculation Form will go here...</p>
+</div>
+
+<!-- Rod Weight and Count Calculation Section -->
+<div id="rodWeightSection">
+    <h2>Rod Weight and Count Calculator</h2>
+    <form id="calculatorForm">
+        <div class="form-group">
+            <label for="diameter">Diameter (mm):</label>
+            <input type="number" id="diameter" step="0.01" required>
+        </div>
+        <div class="form-group">
+            <label for="numItems">How many items (lengths and quantities) would you like to calculate?</label>
+            <input type="number" id="numItems" required>
+        </div>
+        <div id="itemInputs" style="display: none;"></div>
+        <div class="form-group">
+            <label for="materialCost">Cost of Material (per unit):</label>
+            <input type="number" id="materialCost" step="0.01" required>
+        </div>
+        <div class="form-group">
+            <label for="labourCost">Labour Cost:</label>
+            <input type="number" id="labourCost" step="0.01" required>
+        </div>
+        <button type="button" onclick="generateInputFields()">Generate Input Fields</button>
+        <button type="button" id="calculateButton" style="display: none;" onclick="calculateRodWeights()">Calculate</button>
+    </form>
+
+    <div id="rodResults" class="output" style="display: none;">
+        <h3>Results</h3>
+        <table id="resultsTable">
+            <thead>
+                <tr>
+                    <th>Length (mm)</th>
+                    <th>Quantity</th>
+                    <th>Weight (kg)</th>
+                    <th>Rods Required</th>
+                </tr>
+            </thead>
+            <tbody id="resultsBody">
+            </tbody>
+        </table>
+        <div id="totalOutput" class="output">
+            <p>Total Rod Weight: <span id="totalWeight"></span> kg</p>
+            <p>Total Rod Count: <span id="totalRodCount"></span></p>
+        </div>
     </div>
 </div>
 
 <script>
+    function toggleSections() {
+        const calculationType = document.getElementById("calculationType").value;
+
+        // Hide all sections first
+        document.getElementById("studRateSection").style.display = "none";
+        document.getElementById("rodWeightSection").style.display = "none";
+
+        // Show the selected section
+        if (calculationType === "studRate") {
+            document.getElementById("studRateSection").style.display = "block";
+        } else {
+            document.getElementById("rodWeightSection").style.display = "block";
+        }
+    }
+
     function generateInputFields() {
         const numItems = parseInt(document.getElementById("numItems").value);
         const itemInputsDiv = document.getElementById("itemInputs");
@@ -189,12 +228,14 @@
         // Display total weight and rod count
         document.getElementById("totalWeight").innerText = totalWeight.toFixed(2);
         document.getElementById("totalRodCount").innerText = totalRodCount;
-
-        // Show the results section
-        document.getElementById("rodResults").style.display = "block";
+        document.getElementById("rodResults").style.display = 'block'; // Show the results
     }
+
+    // Initial call to display the correct section
+    toggleSections();
 </script>
 
 </body>
 </html>
+
 
