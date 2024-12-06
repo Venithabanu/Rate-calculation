@@ -110,7 +110,7 @@
         </div>
         <div class="form-group">
             <label for="numItems">How many items (lengths and quantities) would you like to calculate?</label>
-            <input type="number" id="numItems" required>
+            <input type="number" id="numItems" required onchange="generateInputFields()">
         </div>
         <div id="itemInputs" style="display: none;"></div>
         <div class="form-group">
@@ -121,7 +121,6 @@
             <label for="labourCost">Labour Cost:</label>
             <input type="number" id="labourCost" step="0.01" required>
         </div>
-        <button type="button" onclick="generateInputFields()">Generate Input Fields</button>
         <button type="button" id="calculateButton" style="display: none;" onclick="calculateRodWeights()">Calculate</button>
     </form>
 
@@ -167,6 +166,7 @@
         const itemInputsDiv = document.getElementById("itemInputs");
         itemInputsDiv.innerHTML = ''; // Clear any previous inputs
 
+        // Show inputs for each item based on number entered
         for (let i = 1; i <= numItems; i++) {
             const itemDiv = document.createElement("div");
             itemDiv.classList.add("form-group");
@@ -183,6 +183,7 @@
             `;
             itemInputsDiv.appendChild(itemDiv);
         }
+
         document.getElementById("calculateButton").style.display = 'block'; // Show the calculate button
     }
 
@@ -198,6 +199,7 @@
         let resultsBody = document.getElementById("resultsBody");
         resultsBody.innerHTML = ''; // Clear any previous results
 
+        // Iterate over each item and calculate weight and rod count
         for (let i = 1; i <= numItems; i++) {
             const length = parseFloat(document.getElementById(`length${i}`).value);
             const quantity = parseInt(document.getElementById(`quantity${i}`).value);
@@ -225,7 +227,7 @@
             document.getElementById(`rods${i}`).value = rodsRequired;
         }
 
-        // Display total weight and rod count
+        // Display total weight and count
         document.getElementById("totalWeight").innerText = totalWeight.toFixed(2);
         document.getElementById("totalRodCount").innerText = totalRodCount;
         document.getElementById("rodResults").style.display = 'block'; // Show the results
@@ -237,5 +239,3 @@
 
 </body>
 </html>
-
-
