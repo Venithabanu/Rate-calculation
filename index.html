@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculator Options</title>
+    <title>Calculator</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -11,12 +11,12 @@
             padding: 20px;
             background-color: #f4f4f4;
         }
-        h1 {
+        h1 {a
             text-align: center;
             color: #333;
         }
-        .calculator-container {
-            max-width: 800px;
+        form {
+            max-width: 600px;
             margin: auto;
             padding: 20px;
             background: #fff;
@@ -31,7 +31,7 @@
             font-weight: bold;
             margin-bottom: 5px;
         }
-        select, input, button {
+        input {
             width: 100%;
             padding: 10px;
             font-size: 1rem;
@@ -39,8 +39,14 @@
             border-radius: 5px;
         }
         button {
+            display: block;
+            width: 100%;
+            padding: 10px;
             background-color: #007bff;
             color: #fff;
+            font-size: 1rem;
+            border: none;
+            border-radius: 5px;
             cursor: pointer;
         }
         button:hover {
@@ -57,185 +63,145 @@
             font-weight: bold;
             color: #2e7d32;
         }
-        .item-fields {
-            display: flex;
-            gap: 20px;
-        }
-        .item-fields .form-group {
-            flex: 1;
+        #menu button {
+            margin-bottom: 10px;
         }
     </style>
 </head>
 <body>
 
-<h1>Choose Calculator</h1>
+<h1>Calculator</h1>
 
-<div class="calculator-container">
-    <label for="calculatorSelect">Select Calculator:</label>
-    <select id="calculatorSelect" onchange="showCalculatorForm()">
-        <option value="studRate">Stud Rate Calculator</option>
-        <option value="rodWeightCount">Rod Weight and Count Calculator</option>
-    </select>
+<div id="menu">
+    <button onclick="showCalculator('studRate')">Stud Rate Calculator</button>
+    <button onclick="showCalculator('rodWeight')">Rod Weight and Count Calculator</button>
+</div>
 
-    <div id="studRateForm" style="display: none;">
-        <h2>Stud Rate Calculator</h2>
-        <form id="studRateFormFields">
-            <div class="form-group">
-                <label for="diameter">Diameter (mm):</label>
-                <input type="number" id="diameterStud" required>
-            </div>
-            <div class="form-group">
-                <label for="length">Length (mm):</label>
-                <input type="number" id="lengthStud" required>
-            </div>
-            <div class="form-group">
-                <label for="quantity">Quantity:</label>
-                <input type="number" id="quantityStud" required>
-            </div>
-            <div class="form-group">
-                <label for="rate">Rate per Stud (₹):</label>
-                <input type="number" id="rateStud" required>
-            </div>
-            <button type="button" onclick="calculateStudRate()">Calculate Stud Rate</button>
-        </form>
-        <div id="studRateOutput" class="output" style="display: none;"></div>
-    </div>
+<div id="studRateCalculator" style="display: none;">
+    <h2>Stud Rate Calculator</h2>
+    <form id="studRateForm">
+        <div class="form-group">
+            <label for="diameter">Diameter (mm):</label>
+            <input type="number" id="diameter" step="0.01" required>
+        </div>
+        <div class="form-group">
+            <label for="length">Length of Stud (mm):</label>
+            <input type="number" id="length" step="0.01" required>
+        </div>
+        <div class="form-group">
+            <label for="materialCost">Cost of Material (per unit):</label>
+            <input type="number" id="materialCost" step="0.01" required>
+        </div>
+        <div class="form-group">
+            <label for="labourCost">Labour Cost (₹):</label>
+            <input type="number" id="labourCost" step="0.01" required>
+        </div>
+        <button type="button" onclick="calculateStudRate()">Calculate</button>
+    </form>
+    <div id="studRateOutput" class="output" style="display: none;"></div>
+</div>
 
-    <div id="rodWeightCountForm" style="display: none;">
-        <h2>Rod Weight and Count Calculator</h2>
-        <form id="rodWeightCountFormFields">
-            <div class="form-group">
-                <label for="diameter">Diameter (mm):</label>
-                <input type="number" id="diameterRod" required>
-            </div>
-            <div class="form-group">
-                <label for="numItems">Number of Items:</label>
-                <input type="number" id="numItems" min="1" required>
-            </div>
-            <div id="itemsContainer"></div>
-            <button type="button" onclick="calculateRodWeightAndCount()">Calculate Rod Weight and Count</button>
-        </form>
-        <div id="rodWeightCountOutput" class="output" style="display: none;"></div>
-    </div>
+<div id="rodWeightCalculator" style="display: none;">
+    <h2>Rod Weight and Count Calculator</h2>
+    <form id="rodWeightForm">
+        <div class="form-group">
+            <label for="diameter">Diameter (mm):</label>
+            <input type="number" id="rodDiameter" step="0.01" required>
+        </div>
+        <div class="form-group">
+            <label for="numItems">No. of Items:</label>
+            <input type="number" id="numItems" min="1" required>
+        </div>
+        <div id="itemFields"></div>
+        <button type="button" onclick="calculateRodWeight()">Calculate</button>
+    </form>
+    <div id="rodWeightOutput" class="output" style="display: none;"></div>
 </div>
 
 <script>
-    // Function to show selected calculator form
-    function showCalculatorForm() {
-        const selectedCalculator = document.getElementById('calculatorSelect').value;
-        
-        // Hide both forms initially
-        document.getElementById('studRateForm').style.display = 'none';
-        document.getElementById('rodWeightCountForm').style.display = 'none';
-        
-        // Show the selected form
-        if (selectedCalculator === 'studRate') {
-            document.getElementById('studRateForm').style.display = 'block';
-        } else if (selectedCalculator === 'rodWeightCount') {
-            document.getElementById('rodWeightCountForm').style.display = 'block';
-        }
+    function showCalculator(type) {
+        document.getElementById('studRateCalculator').style.display = type === 'studRate' ? 'block' : 'none';
+        document.getElementById('rodWeightCalculator').style.display = type === 'rodWeight' ? 'block' : 'none';
     }
 
-    // Function to calculate stud rate
-    function calculateStudRate() {
-        const diameter = parseFloat(document.getElementById('diameterStud').value);
-        const length = parseFloat(document.getElementById('lengthStud').value);
-        const quantity = parseInt(document.getElementById('quantityStud').value);
-        const rate = parseFloat(document.getElementById('rateStud').value);
-
-        const studWeight = diameter * diameter * (length) * 0.0000062;
-        const totalWeight = studWeight * quantity;
-        const totalPrice = totalWeight * rate;
-
-        const outputDiv = document.getElementById('studRateOutput');
-        outputDiv.style.display = 'block';
-        outputDiv.innerHTML = `
-            <p>Stud Weight: ${studWeight.toFixed(2)} kg</p>
-            <p>Total Weight: ${totalWeight.toFixed(2)} kg</p>
-            <p>Total Price: ₹${totalPrice.toFixed(2)}</p>
-        `;
-    }
-
-    // Function to dynamically show fields based on the number of items
-    document.getElementById('numItems').addEventListener('input', function() {
-        const numItems = parseInt(this.value);
-        const container = document.getElementById('itemsContainer');
-        container.innerHTML = ''; // Clear previous fields
-
+    function addItemFields(numItems) {
+        const itemFieldsDiv = document.getElementById('itemFields');
+        itemFieldsDiv.innerHTML = ''; // Clear previous fields
         for (let i = 1; i <= numItems; i++) {
-            const itemDiv = document.createElement('div');
-            itemDiv.classList.add('form-group');
-            itemDiv.innerHTML = `
-                <h3>Item ${i}</h3>
-                <div class="item-fields">
-                    <div class="form-group">
-                        <label for="length${i}">Length (mm):</label>
-                        <input type="number" id="length${i}" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="quantity${i}">Quantity:</label>
-                        <input type="number" id="quantity${i}" required>
-                    </div>
+            itemFieldsDiv.innerHTML += `
+                <div class="form-group">
+                    <label for="length${i}">Length of Stud ${i} (mm):</label>
+                    <input type="number" id="length${i}" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="quantity${i}">Quantity of Stud ${i}:</label>
+                    <input type="number" id="quantity${i}" required>
                 </div>
             `;
-            container.appendChild(itemDiv);
         }
+    }
+
+    document.getElementById('numItems').addEventListener('input', function() {
+        addItemFields(this.value);
     });
 
-    // Function to calculate rod weight and count
-    function calculateRodWeightAndCount() {
-        const diameter = parseFloat(document.getElementById('diameterRod').value);
-        const numItems = parseInt(document.getElementById('numItems').value);
-        const rodLength = 3000; // Standard rod length
+    function calculateRodWeight() {
+        const diameter = parseFloat(document.getElementById("rodDiameter").value); // Diameter of the rod
+        const numItems = parseInt(document.getElementById("numItems").value); // Number of items
 
-        let totalWeight = 0;
-        let totalCount = 0;
-        let outputHtml = '';
+        let totalRodWeight = 0;
+        let totalRodCount = 0;
 
         for (let i = 1; i <= numItems; i++) {
-            const length = parseFloat(document.getElementById(`length${i}`).value);
-            const quantity = parseInt(document.getElementById(`quantity${i}`).value);
+            const length = parseFloat(document.getElementById(`length${i}`).value); // Length of the stud
+            const quantity = parseInt(document.getElementById(`quantity${i}`).value); // Quantity of studs
 
-            // Calculate rod weight for the item
-            const allowance = 10; // Fixed allowance
-            const rodWeight = diameter * diameter * (length + allowance) * 0.0000062;
-            const totalRodWeight = rodWeight * quantity;
+            // Standard length of rod
+            const rodLength = 3000;
 
-            // Calculate number of rods required for the item
-            const rodsPerItem = Math.floor(rodLength / length);
-            const totalRods = Math.ceil(quantity / rodsPerItem);
+            // Calculate number of rods needed
+            const rodsNeeded = Math.ceil(quantity / (rodLength / length));
 
-            // Accumulate totals
-            totalWeight += totalRodWeight;
-            totalCount += totalRods;
+            // Calculate rod weight
+            const rodWeight = diameter * diameter * (length + 8) * 0.0000062 * rodsNeeded;
 
-            // Display individual item calculations
-            outputHtml += `
-                <div>
-                    <h4>Item ${i}</h4>
-                    <p>Rod Weight: ${totalRodWeight.toFixed(2)} kg</p>
-                    <p>Rod Count: ${totalRods} rods</p>
-                </div>
-            `;
+            totalRodWeight += rodWeight;
+            totalRodCount += rodsNeeded;
         }
 
-        // Display total rod weight and count
-        outputHtml += `
-            <div>
-                <h3>Total</h3>
-                <p>Total Rod Weight: ${totalWeight.toFixed(2)} kg</p>
-                <p>Total Rod Count: ${totalCount} rods</p>
-            </div>
-        `;
-
-        // Display the output
-        const outputDiv = document.getElementById('rodWeightCountOutput');
-        outputDiv.style.display = 'block';
-        outputDiv.innerHTML = outputHtml;
+        // Display the result
+        const outputDiv = document.getElementById("rodWeightOutput");
+        outputDiv.style.display = "block";
+        outputDiv.innerHTML = `Total Rod Weight: ${totalRodWeight.toFixed(2)} kg<br>Total Rod Count: ${totalRodCount}`;
     }
 
-    // Show default calculator form on page load
-    showCalculatorForm();
+    function calculateStudRate() {
+        // Get input values
+        const diameter = parseFloat(document.getElementById("diameter").value); // Diameter of the stud
+        const length = parseFloat(document.getElementById("length").value);     // Length of the stud
+        const materialCost = parseFloat(document.getElementById("materialCost").value); // Material cost per unit
+        const labourCost = parseFloat(document.getElementById("labourCost").value); // Labour cost
+
+        // Allowance calculation based on new logic
+        const allowance = length <= 75 ? 5 : 8;
+
+        // Calculate Y
+        const Y = diameter * diameter * (length + allowance) * 0.0000062;
+
+        // Calculate Working Cost
+        const workingCost = Y * materialCost;
+
+        // Calculate Conversion Rate
+        const conversionRate = workingCost + labourCost;
+
+        // Calculate Marginal Rate (Final Rate)
+        const marginalRate = conversionRate + (0.15 * conversionRate);
+
+        // Display the result
+        const outputDiv = document.getElementById("studRateOutput");
+        outputDiv.style.display = "block";
+        outputDiv.innerHTML = `Final Rate: ₹${marginalRate.toFixed(2)}`;
+    }
 </script>
 
 </body>
